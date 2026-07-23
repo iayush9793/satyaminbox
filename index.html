@@ -1,328 +1,349 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Satyam</title>
+    <title>Deliverability & Subject Line Analyzer</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                },
+            },
+        };
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800;900&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-image: url('1.jpg');
-            background-attachment: fixed;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
         
-        .cartoon-shadow {
-            text-shadow: 2px 2px 0px rgba(15, 23, 42, 0.95);
-        }
-        
-        .bubble-border {
-            border: 3px solid #0f172a;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; border: 2px solid #0f172a; }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(12px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide { animation: slideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
-        
-        @keyframes bounceSlow {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
         }
-        .animate-bounce-slow { animation: bounceSlow 3s ease-in-out infinite; }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen selection:bg-blue-500/40 overflow-x-hidden custom-scrollbar bg-slate-950 relative text-xs">
+<body class="h-full text-slate-800 bg-slate-50 flex flex-col font-sans selection:bg-slate-200">
 
-    <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-[2px] z-0 pointer-events-none"></div>
-
-    <div class="fixed bottom-3 right-3 z-40 pointer-events-none hidden sm:flex flex-col items-center animate-bounce-slow">
-        <div class="bg-yellow-400 text-slate-900 text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-xl border-2 border-slate-900 shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] mb-1 scale-90">
-            Oggy &amp; Puppets Dancing! 🕺
-        </div>
-        <img src="2.gif" class="w-20 h-20 md:w-24 md:h-24 object-contain filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)]" alt="Oggy Puppets Dancing" />
-    </div>
-
-    <div id="oggy-celebration" class="fixed top-16 right-4 z-50 transform translate-x-96 opacity-0 transition-all duration-500 pointer-events-none max-w-xs">
-        <div class="bg-gradient-to-br from-yellow-400 to-amber-300 border-3 border-slate-900 rounded-[1.5rem] p-4 shadow-[6px_6px_0px_#0f172a] flex flex-col items-center text-center text-slate-900 relative pointer-events-auto">
-            <button id="close-celebration-btn" class="absolute top-2 right-2 w-6 h-6 bg-slate-900 border-2 border-slate-950 rounded-full flex items-center justify-center hover:bg-slate-800 transition-all text-white active:scale-90" title="Close Notification">
-                <i class="fa-solid fa-xmark text-[10px]"></i>
-            </button>
-            
-            <div class="absolute -top-5 -left-2 bg-white border-3 border-slate-900 rounded-xl px-3 py-1 font-black text-[9px] uppercase tracking-wider shadow-[2px_2px_0px_#0f172a] rotate-[-4deg] text-blue-600 animate-pulse">
-                "TARGET CAPTURED! MEOWWW!" 🐾
-            </div>
-            <img src="3.gif" alt="Oggy Celebrate" class="w-24 h-24 object-contain mb-2 rounded-xl border-3 border-slate-900 bg-sky-200 shadow-inner" />
-            <h4 class="font-black text-sm leading-tight uppercase tracking-tight text-slate-950">Yaaaaaa-hoooo! Clean Catch!</h4>
-            <p class="text-[10px] font-bold text-slate-800 mt-0.5">Oggy successfully mapped the target across all operational nodes in the kitchen cabinet network!</p>
-        </div>
-    </div>
-
-    <div class="relative z-10 flex min-h-screen">
-        <aside class="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-[#0a1024] to-[#040714] border-r-4 border-slate-900 p-5 flex flex-col gap-6 hidden lg:flex z-50">
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-[3px_3px_0px_#0f172a] border-2 border-slate-900 animate-bounce-slow">
-                    <i class="fa-solid fa-cat text-white text-xl"></i>
+    <div class="min-h-full flex flex-col lg:flex-row">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-64 bg-slate-900 text-slate-300 flex-shrink-0 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-800">
+            <div class="p-4 sm:p-6">
+                <!-- App Logo & Branding -->
+                <div class="flex items-center gap-3 mb-6 lg:mb-8">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-900/50">
+                        <i class="fa-solid fa-square-poll-vertical"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white text-base leading-tight tracking-tight">Deliverability</h1>
+                        <p class="text-[11px] text-slate-400 font-medium">Subject & Folder Monitor</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="font-black text-lg tracking-tighter text-white leading-none cartoon-shadow">OGGY'S</h1>
-                    <p class="text-[9px] uppercase tracking-[0.25em] font-black text-blue-400">INBOX SYSTEM</p>
-                </div>
+
+                <!-- Navigation Tabs/Links -->
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 font-semibold text-sm border border-indigo-500/20">
+                        <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                        <span>Subject Line Scanner</span>
+                    </a>
+                    <a href="#common-section" class="flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-medium text-sm transition-colors">
+                        <i class="fa-solid fa-bullseye w-4 text-center"></i>
+                        <span>Match Metrics</span>
+                    </a>
+                </nav>
             </div>
 
-            <nav class="flex flex-col gap-2">
-                <div class="text-[9px] uppercase font-black text-slate-400 tracking-widest px-3 mb-1">Core Controls</div>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-blue-500 text-white shadow-[3px_3px_0px_#0f172a] border-2 border-slate-900 hover:bg-blue-400 transition-all">
-                    <i class="fa-solid fa-cookie-bite text-sm"></i>
-                    <span class="font-black text-xs tracking-tight uppercase">Subject Tracker</span>
-                </a>
-                <a href="#common-section" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] transition-all">
-                    <i class="fa-solid fa-chart-bar text-sm text-amber-400"></i>
-                    <span class="font-black text-xs tracking-tight uppercase">Jack's Stats</span>
-                </a>
-            </nav>
-
-            <div class="mt-auto p-4 bg-slate-950/60 rounded-2xl border-3 border-slate-900 shadow-[3px_3px_0px_#0f172a]">
-                <p class="text-[9px] text-slate-400 mb-2 uppercase tracking-[0.15em] font-black">House Security</p>
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between text-[10px] font-black">
-                        <span class="text-slate-400">Google API:</span>
-                        <span class="text-emerald-400 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                            ACTIVE
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between text-[10px] font-black">
-                        <span class="text-slate-400">Cats Loaded:</span>
-                        <span id="sidebar-accounts-count" class="text-white bg-blue-600/30 px-2 py-0.5 rounded-full border border-blue-500/30">12 Nodes</span>
-                    </div>
+            <!-- Active Nodes Status Widget -->
+            <div class="p-4 m-4 bg-slate-800/70 rounded-xl border border-slate-700/60 text-xs hidden lg:block">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-bold">API Connection</span>
+                    <span class="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Ready
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-slate-300">
+                    <span class="text-slate-400">Master Nodes</span>
+                    <span id="sidebar-accounts-count" class="font-mono bg-slate-700 px-2 py-0.5 rounded text-white font-semibold">12 Active</span>
                 </div>
             </div>
         </aside>
 
-        <main class="lg:ml-64 p-4 md:p-8 max-w-5xl mx-auto flex-grow relative">
-            <header class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0c1430]/90 border-4 border-slate-900 rounded-[1.75rem] p-6 shadow-[5px_5px_0px_#0f172a]">
-                <div>
-                    <h2 class="text-2xl md:text-3.5xl font-black text-white tracking-tight mb-1 uppercase cartoon-shadow">
-                        The Inbox <span class="text-blue-400 underline decoration-wavy decoration-yellow-400">Chase</span>
-                    </h2>
-                    <p class="text-slate-300 text-xs font-semibold">
-                        Scanning latest logs over <span id="header-accounts-count" class="text-yellow-400 font-black text-sm">12</span> kitchen cabinets.
-                    </p>
-                </div>
-                <div class="flex-shrink-0 flex items-center gap-1.5 bg-yellow-400/10 px-3 py-1.5 rounded-xl border-2 border-yellow-400/30 text-yellow-300 font-black text-[10px] uppercase tracking-wider">
-                    <i class="fa-solid fa-circle-exclamation text-amber-400"></i> Bug Alert: Safe
+        <!-- Main Content Workspace -->
+        <main class="flex-1 p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto w-full">
+            <!-- Header Banner -->
+            <header class="mb-6 sm:mb-8 border-b border-slate-200 pb-5 sm:pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">Subject Line & Delivery Monitor</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Scan last 3 subjects across <span id="header-accounts-count" class="font-semibold text-slate-700">12</span> accounts with precise delivery timestamps in seconds.</p>
+                    </div>
+                    <div id="active-mode-badge" class="self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready
+                    </div>
                 </div>
             </header>
 
-            <!-- CONVERGENCE & MATCH ALERTER -->
-            <section id="common-section" class="hidden w-full pb-6">
-                <div class="w-full bg-gradient-to-r from-[#0d1533] to-[#121c45] border-4 border-slate-900 rounded-[1.75rem] p-6 shadow-[6px_6px_0px_#0f172a] flex flex-col gap-4 relative overflow-hidden">
-                    <div class="absolute right-0 top-0 translate-x-8 -translate-y-6 text-slate-800/10 text-8xl font-black pointer-events-none select-none">
-                        OGGY
-                    </div>
+            <!-- Input & Execution Section -->
+            <section class="mb-6 sm:mb-8">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <!-- Target Domains Textarea -->
+                        <div class="lg:col-span-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <label for="domain-input" class="text-xs font-bold uppercase tracking-wider text-slate-600">
+                                    Target Domains / Sender Email Addresses
+                                </label>
+                                <span class="text-[11px] text-slate-400 font-medium">One per line</span>
+                            </div>
+                            <textarea id="domain-input" 
+                                class="w-full h-28 sm:h-32 bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 text-slate-800 font-mono text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
+                                placeholder="example-sender.com&#10;delivery-node.net"></textarea>
+                        </div>
 
-                    <div>
-                        <label class="text-[9px] font-black text-yellow-400 uppercase tracking-widest mb-1.5 block">CONVERGED MAIN SUBJECT LINE</label>
-                        <div class="relative group">
-                            <input id="common-subject-input" readonly
-                                class="w-full bg-slate-950 border-3 border-slate-900 rounded-xl py-3 pl-4 pr-12 text-white font-black text-xs focus:outline-none shadow-inner"
-                                placeholder="Inspecting mailbox layout sequence...">
-                            <button id="copy-btn" 
-                                class="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-lg transition-all active:scale-90 border-2 border-slate-900 shadow-md">
-                                <i class="fa-solid fa-copy text-xs"></i>
+                        <!-- Action Controls -->
+                        <div class="flex flex-col sm:flex-row lg:flex-col justify-end gap-2.5 sm:gap-3">
+                            <!-- Check Inbox Button -->
+                            <button id="btn-check-inbox" type="button" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
+                                <i class="fa-solid fa-inbox text-sm sm:text-base"></i>
+                                <span>Check Inbox</span>
+                            </button>
+
+                            <!-- Check Spam Button -->
+                            <button id="btn-check-spam" type="button" class="w-full py-3 px-4 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm flex items-center justify-center gap-2.5">
+                                <i class="fa-solid fa-triangle-exclamation text-sm sm:text-base"></i>
+                                <span>Check Spam</span>
+                            </button>
+
+                            <!-- Clear Workspace Button -->
+                            <button id="btn-clear" type="button" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-xl text-xs transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <span>Reset Inputs</span>
                             </button>
                         </div>
                     </div>
-                    
-                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                        <div class="flex-grow">
-                            <span class="text-[9px] text-slate-300 font-black uppercase tracking-widest block mb-1">Convergence Match Progress</span>
-                            <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border-2 border-slate-900 p-0.5">
-                                <div id="match-bar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-0 rounded-full transition-all duration-500"></div>
+                </div>
+            </section>
+
+            <!-- Commonality & Analytics Panel -->
+            <section id="common-section" class="hidden mb-6 sm:mb-8 animate-fade-in">
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm space-y-6">
+                    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 sm:gap-6">
+                        <!-- Top Identified Subject Input & Copy -->
+                        <div class="flex-1">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                                Primary Identified Subject Line
+                            </label>
+                            <div class="flex gap-2">
+                                <input id="common-subject-input" readonly
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 text-slate-900 font-semibold text-xs sm:text-sm focus:outline-none truncate"
+                                    placeholder="Scanning accounts for primary subjects...">
+                                <button id="copy-btn" title="Copy Subject Line" type="button"
+                                    class="px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-all text-xs sm:text-sm flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="flex items-center justify-center px-4 py-2.5 bg-slate-950 rounded-xl border-2 border-slate-900 min-w-[100px] shadow-inner">
-                            <div class="text-center">
-                                <span class="text-[8px] text-blue-400 font-black uppercase tracking-widest block leading-none">Match Rate</span>
-                                <span id="match-percent" class="text-xl font-black text-blue-400 italic">0%</span>
+
+                        <!-- Match Convergence Rate Metric -->
+                        <div class="w-full md:w-64 bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Top Match Convergence</span>
+                                <span id="match-percent" class="text-base sm:text-lg font-extrabold text-indigo-600 font-mono">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                <div id="match-bar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="preview-trigger-container" class="hidden animate-slide mt-1 p-4 bg-emerald-500/10 rounded-xl border-3 border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[3px_3px_0px_#000]">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 border-2 border-slate-900 flex-shrink-0 animate-bounce-slow">
-                                <i class="fa-solid fa-cat text-lg"></i>
-                            </div>
-                            <div>
-                                <h5 id="preview-trigger-title" class="text-xs font-black text-white leading-tight uppercase">Retrieved From Muskan's Node!</h5>
-                                <p id="preview-trigger-desc" class="text-[10px] text-slate-300 mt-0.5">Payload confirmed. Preview is gathered strictly from node <strong class="text-blue-400">musk9090</strong>.</p>
+                    <!-- Inbox Subject Lines Summary & Matching Percentage Table -->
+                    <div id="inbox-subjects-summary-container" class="hidden border-t border-slate-100 pt-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-inbox text-indigo-600"></i> Inbox Subject Lines & Match Distribution
+                            </h4>
+                            <span id="inbox-subjects-count" class="text-[11px] font-mono text-slate-400 font-medium">0 unique subjects</span>
+                        </div>
+                        <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl overflow-hidden">
+                            <div id="inbox-subjects-list" class="divide-y divide-slate-200/70 text-xs">
+                                <!-- Dynamic Inbox Subject Breakdown -->
                             </div>
                         </div>
-                        <button id="show-preview-btn" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border-2 border-slate-900 shadow-[2px_2px_0px_#000] active:scale-95 flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-eye"></i> Show Mail Preview
+                    </div>
+
+                    <!-- Email Preview Action Trigger -->
+                    <div id="preview-trigger-container" class="hidden pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-eye text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Muskan Sharma Account</h4>
+                                <p id="preview-trigger-desc" class="text-xs text-slate-500">View safe sandboxed preview pulled from node <strong class="text-slate-700 font-semibold">musk9090</strong>.</p>
+                            </div>
+                        </div>
+                        <button id="show-preview-btn" type="button" class="w-full sm:w-auto px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold tracking-wide transition-all shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span>Show Mail Preview</span>
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- TARGET DOMAIN PANEL -->
-            <div class="flex flex-col gap-6">
-                <section class="w-full">
-                    <div class="bg-[#0c1430]/95 border-4 border-slate-900 rounded-[1.75rem] p-6 shadow-[6px_6px_0px_#0f172a] relative overflow-hidden">
-                        <div class="flex flex-col lg:flex-row gap-6 items-start relative z-10">
-                            <div class="flex-grow w-full">
-                                <div class="flex items-center justify-between mb-3">
-                                    <label class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Target Domains (Cockroach Senders)</label>
-                                    <span class="text-[8px] bg-slate-900 border-2 border-slate-800 text-blue-400 px-2 py-0.5 rounded-full font-black">ISOLATED SYSTEM TARGETS</span>
-                                </div>
-                                <textarea id="domain-input" 
-                                    class="w-full h-28 bg-slate-950 border-3 border-slate-900 rounded-xl p-4 text-white placeholder:text-slate-650 focus:outline-none focus:border-blue-500 transition-all resize-none text-xs font-mono leading-relaxed shadow-inner"
-                                    placeholder="example-sender.com&#10;delivery-node.net"></textarea>
+            <!-- Results Feed Table Card -->
+            <section class="mb-10">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[350px] flex flex-col">
+                    <!-- Feed Table Header -->
+                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <h3 class="font-bold text-slate-900 text-xs sm:text-sm tracking-tight uppercase">Account Feed & Subject Analysis</h3>
+                            <div id="scan-progress" class="hidden flex items-center gap-2 text-xs text-indigo-600 font-medium">
+                                <i class="fa-solid fa-circle-notch animate-spin"></i> Scanning Node...
                             </div>
-                            <div class="w-full lg:w-64 lg:pt-6 flex flex-col gap-2.5">
-                                <button id="sync-inbox-btn" 
-                                    class="group w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-black text-[11px] flex items-center justify-center gap-2 transition-all border-3 border-slate-900 shadow-[3px_3px_0px_rgba(0,0,0,1)] active:scale-95">
-                                    <i class="fa-solid fa-envelope-open group-hover:scale-110 transition-transform"></i>
-                                    <span class="tracking-wider uppercase">SYNC INBOX NET</span>
-                                </button>
-                                <button id="sync-spam-btn" 
-                                    class="group w-full py-3 bg-gradient-to-r from-rose-500 to-amber-600 hover:from-rose-400 hover:to-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-black text-[11px] flex items-center justify-center gap-2 transition-all border-3 border-slate-900 shadow-[3px_3px_0px_rgba(0,0,0,1)] active:scale-95">
-                                    <i class="fa-solid fa-bug group-hover:scale-110 transition-transform"></i>
-                                    <span class="tracking-wider uppercase">SYNC SPAM NET</span>
-                                </button>
-                                <button id="clear-btn" class="hidden w-full py-2 text-slate-400 hover:text-rose-400 text-[10px] font-black transition-colors uppercase tracking-widest">
-                                    <i class="fa-solid fa-trash-can mr-1.5"></i> Clear Kitchen Table
-                                </button>
-                            </div>
+                        </div>
+                        <div id="feed-status-summary" class="text-[11px] sm:text-xs font-medium text-slate-500">
+                            Awaiting scan initiation
                         </div>
                     </div>
-                </section>
 
-                <!-- DATA STREAM RECEPTACLE -->
-                <section class="w-full">
-                    <div class="bg-[#0c1430]/95 border-4 border-slate-900 rounded-[1.75rem] overflow-hidden shadow-[6px_6px_0px_#0f172a] min-h-[380px] flex flex-col">
-                        <div class="px-6 py-4 border-b-3 border-slate-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/40">
-                            <h3 class="text-xs font-black text-white flex items-center gap-2 tracking-widest uppercase">
-                                <i class="fa-solid fa-circle-nodes text-yellow-400"></i> House Extraction Feed 
-                                <span id="feed-filter-badge" class="ml-2 text-[8px] px-2 py-0.5 rounded bg-slate-900 text-blue-450 border border-slate-800 hidden"></span>
-                            </h3>
+                    <!-- Empty State -->
+                    <div id="empty-state" class="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 text-center">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
+                            <i class="fa-solid fa-inbox text-xl sm:text-2xl"></i>
                         </div>
-
-                        <div id="empty-state" class="flex-grow flex flex-col items-center justify-center py-16 text-center">
-                            <div class="w-16 h-16 bg-slate-950 rounded-full flex items-center justify-center mb-4 border-3 border-slate-900 shadow-[3px_3px_0px_#000] animate-bounce-slow">
-                                <i class="fa-solid fa-cookie text-2xl text-yellow-400"></i>
-                            </div>
-                            <h4 class="text-sm font-black text-white uppercase tracking-tight">No Chase Active</h4>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Provide targets and sync the kitchen cabinet arrays</p>
-                        </div>
-
-                        <div id="results-table-container" class="hidden">
-                            <div class="overflow-x-auto custom-scrollbar">
-                                <table class="w-full text-left border-collapse text-[11px]">
-                                    <thead>
-                                        <tr class="text-slate-400 text-[9px] uppercase tracking-widest font-black border-b-3 border-slate-900 bg-slate-950/20">
-                                            <th class="px-5 py-4">Node Tag</th>
-                                            <th class="px-5 py-4">Domain</th>
-                                            <th class="px-5 py-4">Captured Logs (Last 3)</th>
-                                            <th class="px-5 py-4">Delivery Speed</th>
-                                            <th class="px-5 py-4 text-right">Verification</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="results-body" class="divide-y divide-slate-900/60"></tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-700 mb-1">No Active Scan Data</h4>
+                        <p class="text-xs text-slate-400 max-w-sm">Enter target domains above and click <strong>Check Inbox</strong> or <strong>Check Spam</strong> to inspect subject lines and delivery times.</p>
                     </div>
-                </section>
-            </div>
+
+                    <!-- Mobile-Optimized Table Container -->
+                    <div id="results-table-container" class="hidden flex-1 overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="hidden sm:table-header-group">
+                                <tr class="bg-slate-50/80 border-b border-slate-200 text-slate-500 text-[11px] uppercase tracking-wider font-bold">
+                                    <th class="px-6 py-3.5">Account Node</th>
+                                    <th class="px-6 py-3.5">Target Domain</th>
+                                    <th class="px-6 py-3.5">Last 3 Subject Lines & Delivery Times</th>
+                                    <th class="px-6 py-3.5 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body" class="divide-y divide-slate-200 sm:divide-slate-100 text-xs sm:text-sm">
+                                <!-- Dynamic rows inserted via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- PREVIEW MODAL -->
-    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-all duration-300">
-        <div class="bg-[#0c1430] border-4 border-slate-900 w-full max-w-3xl rounded-[1.75rem] shadow-[8px_8px_0px_#0f172a] overflow-hidden flex flex-col max-h-[80vh] transform scale-95 transition-all duration-300">
-            <div class="px-6 py-4 border-b-3 border-slate-900 bg-slate-950/50 flex items-center justify-between">
+    <!-- Safe Mail Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white border border-slate-200 w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+            <!-- Modal Header -->
+            <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                 <div>
-                    <span class="text-[9px] bg-blue-500/20 text-blue-400 border-2 border-slate-900 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">Muskan Sharma Node Audit</span>
-                    <h3 id="modal-subject" class="text-base font-black text-white mt-1 line-clamp-1">Email Subject</h3>
+                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit: Muskan Sharma</span>
+                    <h3 id="modal-subject" class="text-sm sm:text-base font-bold text-slate-900 mt-1 line-clamp-1">Email Subject Line</h3>
                 </div>
-                <button id="close-modal-btn" class="w-10 h-10 rounded-full bg-slate-950 border-2 border-slate-900 hover:bg-slate-900 hover:text-white flex items-center justify-center transition-all shadow-md">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                <button id="close-modal-btn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-all text-sm shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="px-6 py-3 bg-slate-950/40 border-b-2 border-slate-900 flex flex-wrap gap-3 items-center text-[10px] text-slate-300 font-black uppercase tracking-wide">
-                <div class="flex items-center gap-1.5">
-                    <span class="text-slate-500">Node:</span>
-                    <span id="modal-account" class="text-emerald-400 font-bold">musk9090</span>
+            <!-- Modal Metadata Header -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2.5 sm:gap-4 items-center text-[11px] sm:text-xs text-slate-600 font-medium">
+                <div>
+                    <span class="text-slate-400">Account:</span>
+                    <span id="modal-account" class="font-bold text-slate-800">musk9090 (Muskan Sharma)</span>
                 </div>
-                <div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
-                <div class="flex items-center gap-1.5">
-                    <span class="text-slate-500">Sync:</span>
-                    <span id="modal-time" class="text-white font-mono">Jun 8 @ 02:57 PM</span>
+                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
+                <div>
+                    <span class="text-slate-400">Timestamp:</span>
+                    <span id="modal-time" class="font-mono text-slate-800">Jun 8 @ 14:30:10</span>
                 </div>
-                <div class="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
-                <div class="flex items-center gap-1 bg-amber-400/20 text-amber-400 px-2 py-0.5 rounded border border-amber-400/30 text-[8px] font-black">
-                    <i class="fa-solid fa-lock"></i> Raw Safe View
+                <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
+                <div>
+                    <span class="text-slate-400">Relative Delivery:</span>
+                    <span id="modal-seconds-ago" class="font-mono text-indigo-600 font-bold">120 seconds ago</span>
                 </div>
             </div>
-            <div class="flex-grow overflow-y-auto p-6 bg-slate-950 relative min-h-[300px]">
-                <div id="modal-body-fallback" class="hidden text-slate-300 whitespace-pre-wrap leading-relaxed font-mono text-[11px]"></div>
-                <iframe id="modal-body-frame" class="w-full h-full min-h-[340px] border-0 rounded-xl bg-white hidden" sandbox="allow-same-origin"></iframe>
+            <!-- Modal Body Sandbox Viewport -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100/50 relative min-h-[280px] sm:min-h-[350px]">
+                <div id="modal-body-fallback" class="hidden text-slate-800 whitespace-pre-wrap leading-relaxed font-mono text-xs bg-white p-4 sm:p-5 rounded-xl border border-slate-200"></div>
+                <iframe id="modal-body-frame" class="w-full h-full min-h-[300px] sm:min-h-[380px] border border-slate-200 rounded-xl bg-white hidden" sandbox="allow-same-origin"></iframe>
             </div>
         </div>
     </div>
 
-    <!-- ERROR NOTIFICATION -->
-    <div id="toast-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="bg-rose-950 border-3 border-slate-900 text-rose-100 px-5 py-3 rounded-2xl shadow-[3px_3px_0px_#000] flex items-center gap-2.5 font-semibold text-xs">
-            <i class="fa-solid fa-circle-exclamation text-rose-400 text-xl"></i>
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 transform translate-y-10 opacity-0 transition-all duration-200 pointer-events-none">
+        <div class="bg-slate-900 text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-xl shadow-lg flex items-center gap-3 text-xs font-medium border border-slate-700 max-w-xs sm:max-w-md">
+            <i class="fa-solid fa-circle-info text-indigo-400 text-base shrink-0"></i>
             <div>
-                <p class="font-black uppercase text-[10px] tracking-wider">Node Sync Fault</p>
-                <p class="text-[11px] text-rose-300">Target matching log configuration criteria wasn't identified in musk9090 node.</p>
+                <p id="toast-title" class="font-bold">Notice</p>
+                <p id="toast-message" class="text-slate-300">Target subject not found in account node.</p>
             </div>
         </div>
     </div>
 
     <script>
         const CONFIG = {
-             clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
+            clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
             clientSecret: "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",
             accounts: [
-             { name: "nnon", token: "1//0gc7dGi8DfNkfCgYIARAAGBASNwF-L9Irk_tu6AVMH7x_8Zdpy7W9zmn58vFh75YnuE0_AMVtwPnpzw8Ta1CuoyeFYXM9PKI_YTo" },
+          { name: "nnon", token: "1//0gc7dGi8DfNkfCgYIARAAGBASNwF-L9Irk_tu6AVMH7x_8Zdpy7W9zmn58vFh75YnuE0_AMVtwPnpzw8Ta1CuoyeFYXM9PKI_YTo" },
                 { name: "riyasri", token: "1//0g0Ww00IQxHuACgYIARAAGBASNwF-L9IrDXxSpHvKjPEzj2CzoP3XRWiTn3oFy8GBjBsmsEskJP2hSm4DrFFZUU5kOxefg-f4qIo" }
             ]
         };
 
-        document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
-        document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
-
         const dom = {
             input: document.getElementById('domain-input'),
-            syncInbox: document.getElementById('sync-inbox-btn'),
-            syncSpam: document.getElementById('sync-spam-btn'),
-            clear: document.getElementById('clear-btn'),
+            btnCheckInbox: document.getElementById('btn-check-inbox'),
+            btnCheckSpam: document.getElementById('btn-check-spam'),
+            btnClear: document.getElementById('btn-clear'),
             table: document.getElementById('results-table-container'),
             body: document.getElementById('results-body'),
             empty: document.getElementById('empty-state'),
+            progress: document.getElementById('scan-progress'),
+            modeBadge: document.getElementById('active-mode-badge'),
+            feedStatus: document.getElementById('feed-status-summary'),
+            
             commonSec: document.getElementById('common-section'),
             commonInput: document.getElementById('common-subject-input'),
             copy: document.getElementById('copy-btn'),
             percent: document.getElementById('match-percent'),
             matchBar: document.getElementById('match-bar'),
-            filterBadge: document.getElementById('feed-filter-badge'),
+
+            inboxSummaryContainer: document.getElementById('inbox-subjects-summary-container'),
+            inboxSubjectsList: document.getElementById('inbox-subjects-list'),
+            inboxSubjectsCount: document.getElementById('inbox-subjects-count'),
+
             previewTrigger: document.getElementById('preview-trigger-container'),
             previewTriggerTitle: document.getElementById('preview-trigger-title'),
             previewTriggerDesc: document.getElementById('preview-trigger-desc'),
@@ -332,50 +353,20 @@
             modalSubject: document.getElementById('modal-subject'),
             modalAccount: document.getElementById('modal-account'),
             modalTime: document.getElementById('modal-time'),
+            modalSecondsAgo: document.getElementById('modal-seconds-ago'),
             modalBodyFrame: document.getElementById('modal-body-frame'),
             modalBodyFallback: document.getElementById('modal-body-fallback'),
+
             toast: document.getElementById('toast-notification'),
-            oggyCelebrate: document.getElementById('oggy-celebration')
+            toastTitle: document.getElementById('toast-title'),
+            toastMessage: document.getElementById('toast-message')
         };
 
-        let lastResults = [];
-        let currentScope = 'INBOX'; 
+        let lastScanResults = [];
+        let activeScanMode = 'inbox';
 
-        function playVictorySound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const now = ctx.currentTime;
-                
-                const osc1 = ctx.createOscillator();
-                const gain1 = ctx.createGain();
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(523.25, now);
-                gain1.gain.setValueAtTime(0.08, now);
-                gain1.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
-                osc1.connect(gain1); gain1.connect(ctx.destination);
-                osc1.start(now); osc1.stop(now + 0.12);
-                
-                const osc2 = ctx.createOscillator();
-                const gain2 = ctx.createGain();
-                osc2.type = 'triangle';
-                osc2.frequency.setValueAtTime(659.25, now + 0.08);
-                gain2.gain.setValueAtTime(0.08, now + 0.08);
-                gain2.gain.exponentialRampToValueAtTime(0.005, now + 0.2);
-                osc2.connect(gain2); gain2.connect(ctx.destination);
-                osc2.start(now + 0.08); osc2.stop(now + 0.2);
-                
-                const osc3 = ctx.createOscillator();
-                const gain3 = ctx.createGain();
-                osc3.type = 'sine';
-                osc3.frequency.setValueAtTime(783.99, now + 0.16);
-                gain3.gain.setValueAtTime(0.12, now + 0.16);
-                gain3.gain.exponentialRampToValueAtTime(0.005, now + 0.4);
-                osc3.connect(gain3); gain3.connect(ctx.destination);
-                osc3.start(now + 0.16); osc3.stop(now + 0.4);
-            } catch (e) {
-                console.warn("Audio Context conversion blocked:", e);
-            }
-        }
+        document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
+        document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
         async function getAccess(refreshToken) {
             const res = await fetch('https://oauth2.googleapis.com/token', {
@@ -428,54 +419,10 @@
             return "";
         }
 
-        function calculateDeliveryDuration(headers) {
+        async function fetchSubjects(accessToken, domain, mode) {
             try {
-                const receivedHeaders = headers.filter(h => h.name.toLowerCase() === 'received');
-                if (receivedHeaders.length < 2) return "Instant";
-
-                const parseDateFromReceived = (headerValue) => {
-                    const semiIndex = headerValue.lastIndexOf(';');
-                    if (semiIndex === -1) return null;
-                    const dateStr = headerValue.substring(semiIndex + 1).trim();
-                    const d = new Date(dateStr);
-                    return isNaN(d.getTime()) ? null : d;
-                };
-
-                const newestDate = parseDateFromReceived(receivedHeaders[0].value);
-                const oldestDate = parseDateFromReceived(receivedHeaders[receivedHeaders.length - 1].value);
-
-                if (!newestDate || !oldestDate) {
-                    const dateHeader = headers.find(h => h.name.toLowerCase() === 'date')?.value;
-                    if (dateHeader && newestDate) {
-                        const dHeaderObj = new Date(dateHeader);
-                        if (!isNaN(dHeaderObj.getTime())) {
-                            return formatDiff(newestDate - dHeaderObj);
-                        }
-                    }
-                    return "Standard Route";
-                }
-
-                return formatDiff(newestDate - oldestDate);
-            } catch (e) {
-                return "Standard Route";
-            }
-        }
-
-        function formatDiff(diffMs) {
-            if (diffMs <= 0) return "Instant";
-            const totalSecs = Math.floor(diffMs / 1000);
-            if (totalSecs < 60) return `${totalSecs}s`;
-            const totalMins = Math.floor(totalSecs / 60);
-            if (totalMins < 60) return `${totalMins}m`;
-            const hours = Math.floor(totalMins / 60);
-            const mins = totalMins % 60;
-            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-        }
-
-        async function fetchSubjects(accessToken, domain, filterType) {
-            try {
-                const targetQuery = filterType === 'SPAM' ? 'in:spam' : 'in:inbox';
-                const q = encodeURIComponent(`${domain} ${targetQuery}`);
+                const folderQuery = mode === 'inbox' ? 'in:inbox' : 'in:spam';
+                const q = encodeURIComponent(`${domain} ${folderQuery}`);
                 
                 const listRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages?q=${q}&maxResults=3`, {
                     headers: { Authorization: `Bearer ${accessToken}` }
@@ -483,6 +430,8 @@
                 const listData = await listRes.json();
 
                 if (!listData.messages || listData.messages.length === 0) return [];
+
+                const now = Date.now();
 
                 return await Promise.all(listData.messages.map(async (m) => {
                     const msgRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}`, {
@@ -495,8 +444,15 @@
                     
                     const dateRaw = headers.find(h => h.name === 'Date')?.value || "";
                     const dateObj = new Date(dateRaw);
-                    const date = isNaN(dateObj) ? "" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-                    const time = isNaN(dateObj) ? "" : dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+                    const timeValid = !isNaN(dateObj.getTime());
+                    
+                    let secondsAgo = 0;
+                    if (timeValid) {
+                        secondsAgo = Math.max(0, Math.floor((now - dateObj.getTime()) / 1000));
+                    }
+
+                    const dateStr = !timeValid ? "N/A" : dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    const timeStr = !timeValid ? "N/A" : dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
 
                     const snippet = msgData.snippet || "";
                     let parsedBody = "";
@@ -506,26 +462,149 @@
                         parsedBody = snippet;
                     }
 
-                    const deliveryStatus = calculateDeliveryDuration(headers);
                     const labels = msgData.labelIds || [];
-                    let landing = filterType;
-                    
-                    if (landing === 'INBOX') {
-                        if (labels.includes('CATEGORY_PROMOTIONS')) landing = 'PROMOTIONS';
-                        else if (labels.includes('CATEGORY_SOCIAL')) landing = 'SOCIAL';
-                        else if (labels.includes('CATEGORY_UPDATES')) landing = 'UPDATES';
-                        else if (labels.includes('CATEGORY_FORUMS')) landing = 'FORUMS';
-                        else landing = 'PRIMARY';
-                    }
+                    let landing = mode === 'inbox' ? 'INBOX' : 'SPAM';
+                    if (labels.includes('SPAM')) landing = 'SPAM';
+                    else if (labels.includes('INBOX')) landing = 'INBOX';
 
-                    return { subject, date, time, landing, snippet, deliveryStatus, body: parsedBody || snippet };
+                    return { 
+                        subject, 
+                        dateStr, 
+                        timeStr, 
+                        secondsAgo, 
+                        landing, 
+                        snippet, 
+                        body: parsedBody || snippet 
+                    };
                 }));
-            } catch (e) { return null; }
+            } catch (e) { 
+                return null; 
+            }
         }
 
-        function calculateCommonality(results) {
-            if (results.length === 0) return;
+        function renderRow(accConfig, domain, subjects, mode) {
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50 transition-colors animate-fade-in flex flex-col sm:table-row border-b sm:border-b-0 border-slate-200 pb-4 sm:pb-0 mb-4 sm:mb-0";
+            
+            const accName = accConfig.name;
+            const isOpener = accConfig.type === "Opener";
+            const isMuskan = (accName === 'muskansharma90' || accName === 'musk9090');
 
+            const typeBadgeHtml = isOpener 
+                ? `<span class="inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-envelope-open text-[8px]"></i> Opener</span>`
+                : `<span class="inline-flex items-center gap-1 text-[10px] bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded font-semibold mt-0.5"><i class="fa-solid fa-lock text-[8px]"></i> Non-Opener</span>`;
+
+            const accountLabel = isMuskan 
+                ? `<div class="flex flex-col">
+                    <div class="flex items-center gap-2 font-bold text-slate-900">
+                      <span class="w-2 h-2 rounded-full bg-indigo-600"></span>${accName}
+                      <span class="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono">TARGET NODE</span>
+                    </div>
+                    <div class="mt-0.5">${typeBadgeHtml}</div>
+                   </div>` 
+                : `<div class="flex flex-col">
+                    <div class="font-semibold text-slate-800">${accName}</div>
+                    <div class="mt-0.5">${typeBadgeHtml}</div>
+                   </div>`;
+
+            const hasData = subjects && subjects.length > 0;
+            const statusHtml = hasData 
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> MATCHED (${subjects.length})
+                   </span>`
+                : subjects === null 
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                     AUTH ERROR
+                   </span>`
+                : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                     NO MAIL
+                   </span>`;
+
+            let subjectsHtml = '';
+            if (subjects === null) {
+                subjectsHtml = `<div class="text-rose-600 text-xs font-medium">Authentication token expired for account: ${accName}</div>`;
+            } else if (subjects.length === 0) {
+                subjectsHtml = `<div class="text-slate-400 text-xs italic">No messages found matching mode [${mode.toUpperCase()}] for target domain</div>`;
+            } else {
+                subjectsHtml = subjects.map((s, i) => {
+                    const isInboxMode = s.landing === 'INBOX';
+                    const badgeStyle = isInboxMode 
+                        ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                        : 'bg-amber-50 text-amber-800 border-amber-200';
+                    
+                    const folderIcon = isInboxMode ? 'fa-inbox' : 'fa-triangle-exclamation';
+
+                    return `
+                        <div class="mb-2.5 last:mb-0 p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+                                <div class="font-bold text-slate-900 flex items-start gap-2 min-w-0 flex-1">
+                                    <span class="w-4 h-4 rounded bg-slate-200 text-slate-700 font-mono text-[10px] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">${i+1}</span>
+                                    <span class="break-words line-clamp-2 sm:line-clamp-1 flex-1 leading-snug">${escapeHtml(s.subject)}</span>
+                                </div>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold border ${badgeStyle} shrink-0 self-start sm:self-auto">
+                                    <i class="fa-solid ${folderIcon} text-[9px]"></i> ${s.landing}
+                                </span>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-[11px] text-slate-500 font-mono mt-1 pt-1.5 border-t border-slate-200/60">
+                                <div>
+                                    <span class="text-slate-400">Delivered:</span> 
+                                    <strong class="text-indigo-600 font-bold">${s.secondsAgo.toLocaleString()} seconds ago</strong>
+                                </div>
+                                <div class="text-slate-300 hidden sm:block">•</div>
+                                <div class="text-slate-500">${s.dateStr} @ ${s.timeStr}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            row.innerHTML = `
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">
+                    <div class="flex items-center justify-between sm:block mb-1 sm:mb-0">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Node</span>
+                        ${accountLabel}
+                    </div>
+                </td>
+                <td class="px-4 sm:px-6 py-1 sm:py-4 align-top block sm:table-cell">
+                    <div class="flex items-center justify-between sm:block mb-2 sm:mb-0">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Domain</span>
+                        <span class="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 truncate max-w-[200px] inline-block">${escapeHtml(domain)}</span>
+                    </div>
+                </td>
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top block sm:table-cell">${subjectsHtml}</td>
+                <td class="px-4 sm:px-6 py-2 sm:py-4 align-top text-left sm:text-right block sm:table-cell">
+                    <div class="flex items-center justify-between sm:justify-end sm:block">
+                        <span class="sm:hidden text-[10px] font-bold uppercase text-slate-400">Status</span>
+                        ${statusHtml}
+                    </div>
+                </td>
+            `;
+            dom.body.appendChild(row);
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function calculateCommonality(results, mode) {
+            if (results.length === 0) {
+                dom.percent.textContent = "0%";
+                dom.matchBar.style.width = "0%";
+                dom.commonInput.value = `No ${mode.toUpperCase()} messages retrieved from targets.`;
+                dom.previewTrigger.classList.add('hidden');
+                dom.inboxSummaryContainer.classList.add('hidden');
+                return;
+            }
+
+            const totalAccounts = CONFIG.accounts.length;
+
+            // Map unique subject lines per account (All landing folders)
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -534,18 +613,9 @@
                 return acc;
             }, {});
 
-            const accountNames = Object.keys(accountMaps);
-            const totalAccounts = CONFIG.accounts.length;
-
-            if (accountNames.length < totalAccounts) {
-                dom.percent.textContent = "...";
-                dom.commonInput.value = "Chasing down data convergence...";
-                return;
-            }
-
-            const allSubjectsAcrossAccounts = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
+            const allSubjects = [].concat(...Object.values(accountMaps).map(set => Array.from(set)));
             const frequency = {};
-            allSubjectsAcrossAccounts.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
+            allSubjects.forEach(s => frequency[s] = (frequency[s] || 0) + 1);
 
             let topSubject = "";
             let topCount = 0;
@@ -559,269 +629,216 @@
             const matchRate = Math.round((topCount / totalAccounts) * 100);
             dom.percent.textContent = `${matchRate}%`;
             dom.matchBar.style.width = `${matchRate}%`;
-            
-            if (topCount === totalAccounts) {
-                dom.commonInput.value = topSubject;
-                dom.percent.className = "text-xl font-black text-emerald-400 italic cartoon-shadow";
-                
-                if (dom.oggyCelebrate.classList.contains('opacity-0')) {
-                    dom.oggyCelebrate.classList.remove('translate-x-96', 'opacity-0', 'pointer-events-none');
-                    dom.oggyCelebrate.classList.add('translate-x-0', 'opacity-100');
-                    playVictorySound();
-                }
-            } else {
-                dom.oggyCelebrate.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
-                dom.oggyCelebrate.classList.remove('translate-x-0', 'opacity-100');
 
-                if (topCount > 1) {
-                    dom.commonInput.value = `Partial Match: "${topSubject}"`;
-                    dom.percent.className = "text-xl font-black text-blue-400 italic cartoon-shadow";
-                } else {
-                    dom.commonInput.value = "No unified tracking vectors detected inside this house framework.";
-                    dom.percent.textContent = "0%";
-                    dom.percent.className = "text-xl font-black text-slate-500 italic cartoon-shadow";
-                }
+            if (topCount > 0) {
+                dom.commonInput.value = topSubject;
+            } else {
+                dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
             }
 
-            const muskanAccountName = "musk9090";
-            const muskanResult = results.find(item => item.accName === muskanAccountName);
+            // Compute Inbox Specific Subject Lines and Match Percentages
+            const inboxAccountMaps = results.reduce((acc, curr) => {
+                if (!acc[curr.accName]) acc[curr.accName] = new Set();
+                curr.subjects.forEach(s => {
+                    if (s.landing === 'INBOX') {
+                        acc[curr.accName].add(s.subject);
+                    }
+                });
+                return acc;
+            }, {});
+
+            const inboxSubjectsList = [].concat(...Object.values(inboxAccountMaps).map(set => Array.from(set)));
+            const inboxFrequency = {};
+            inboxSubjectsList.forEach(s => inboxFrequency[s] = (inboxFrequency[s] || 0) + 1);
+
+            const sortedInboxSubjects = Object.entries(inboxFrequency)
+                .map(([subject, count]) => ({
+                    subject,
+                    count,
+                    percentage: Math.round((count / totalAccounts) * 100)
+                }))
+                .sort((a, b) => b.count - a.count);
+
+            if (sortedInboxSubjects.length > 0) {
+                dom.inboxSummaryContainer.classList.remove('hidden');
+                dom.inboxSubjectsCount.textContent = `${sortedInboxSubjects.length} Inbox subject${sortedInboxSubjects.length > 1 ? 's' : ''}`;
+                
+                dom.inboxSubjectsList.innerHTML = sortedInboxSubjects.map((item, index) => {
+                    return `
+                        <div class="p-3 flex items-center justify-between gap-3 hover:bg-slate-100/60 transition-colors">
+                            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 font-mono font-bold text-[10px] flex items-center justify-center shrink-0">${index + 1}</span>
+                                <span class="font-semibold text-slate-800 text-xs sm:text-sm truncate" title="${escapeHtml(item.subject)}">${escapeHtml(item.subject)}</span>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0 font-mono text-xs">
+                                <span class="text-slate-400 hidden sm:inline text-[11px]">${item.count} / ${totalAccounts} nodes</span>
+                                <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">${item.percentage}%</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                dom.inboxSummaryContainer.classList.add('hidden');
+            }
+
+            const muskanResult = results.find(item => item.accName === "muskansharma90" || item.accName === "musk9090");
             const hasMuskanMails = muskanResult && muskanResult.subjects && muskanResult.subjects.length > 0;
 
             if (hasMuskanMails) {
                 dom.previewTrigger.classList.remove('hidden');
-                if (topCount === totalAccounts) {
-                    dom.previewTriggerTitle.textContent = "100% Convergence Match Achieved";
-                    dom.previewTriggerDesc.innerHTML = `Payload verified across all network nodes. Preview is pulled strictly from <strong class="text-blue-400">musk9090</strong>.`;
-                } else {
-                    dom.previewTriggerTitle.textContent = "Mail Detected in Muskan's Account";
-                    dom.previewTriggerDesc.innerHTML = `Mail landed successfully on <strong class="text-blue-400">Muskan Sharma's</strong> node (musk9090).`;
-                }
+                dom.previewTriggerTitle.textContent = `Mail Detected in Muskan's Account (${mode.toUpperCase()})`;
+                dom.previewTriggerDesc.innerHTML = `Active ${mode.toUpperCase()} payload verified. Click button to inspect HTML structure safely.`;
             } else {
                 dom.previewTrigger.classList.add('hidden');
             }
         }
 
-        function renderRow(accName, domain, subjects) {
-            const row = document.createElement('tr');
-            row.className = "hover:bg-blue-500/[0.04] transition-colors group animate-slide";
-            
-            const isMuskan = (accName === 'musk9090');
-            const accountLabel = isMuskan 
-                ? `<span class="text-blue-400 font-black text-[11px] tracking-tight flex items-center gap-1.5"><i class="fa-solid fa-cat text-[9px] text-yellow-400 animate-pulse"></i>${accName}</span>` 
-                : `<span class="text-slate-200 font-black text-[11px] tracking-tight">${accName}</span>`;
-
-            const hasData = subjects && subjects.length > 0;
-            const statusHtml = hasData 
-                ? `<div class="flex items-center gap-1.5 justify-end text-[8px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full border border-emerald-400/20">VERIFIED INTERACTION</div>`
-                : subjects === null 
-                ? `<div class="flex items-center gap-1.5 justify-end text-[8px] font-black text-rose-400 bg-rose-400/10 px-2 py-1 rounded-full border border-rose-400/20 text-center">AUTH EXPIRED</div>`
-                : `<div class="flex items-center gap-1.5 justify-end text-[8px] font-black text-slate-500 bg-slate-800 px-2 py-1 rounded-full">NO DATA</div>`;
-
-            let subjectsHtml = '';
-            if (subjects === null) {
-                subjectsHtml = `<span class="text-rose-400/80 text-[10px] font-bold">Please update authentication tokens for ${accName}</span>`;
-            } else if (subjects.length === 0) {
-                subjectsHtml = `<span class="text-slate-600 text-[10px] italic font-semibold">Domain match not identified in last target logs</span>`;
-            } else {
-                subjectsHtml = subjects.map((s, i) => {
-                    let badgeColor = "bg-slate-500/10 text-slate-400 border border-slate-500/20";
-                    let folderIcon = "fa-folder";
-                    
-                    if (s.landing === 'PRIMARY') {
-                        badgeColor = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
-                        folderIcon = "fa-inbox";
-                    } else if (s.landing === 'SPAM') {
-                        badgeColor = "bg-rose-500/10 text-rose-400 border border-rose-500/20";
-                        folderIcon = "fa-bug";
-                    } else if (s.landing === 'PROMOTIONS') {
-                        badgeColor = "bg-amber-500/10 text-amber-400 border border-amber-500/20";
-                        folderIcon = "fa-tags";
-                    } else if (s.landing === 'SOCIAL') {
-                        badgeColor = "bg-sky-500/10 text-sky-400 border border-sky-500/20";
-                        folderIcon = "fa-users";
-                    } else if (s.landing === 'UPDATES') {
-                        badgeColor = "bg-purple-500/10 text-purple-400 border border-purple-500/20";
-                        folderIcon = "fa-bell";
-                    } else if (s.landing === 'FORUMS') {
-                        badgeColor = "bg-teal-500/10 text-teal-400 border border-teal-500/20";
-                        folderIcon = "fa-comments";
-                    }
-
-                    return `
-                        <div class="mail-item flex flex-col mb-2 p-2.5 rounded-xl bg-slate-900/60 border border-slate-900 text-[10px] hover:border-blue-500/30 transition-all">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                                <div class="flex items-center gap-2 overflow-hidden">
-                                    <span class="w-4.5 h-4.5 flex-shrink-0 flex items-center justify-center text-[7px] font-black bg-slate-850 text-slate-400 rounded-md border border-slate-800">${i+1}</span>
-                                    <span class="text-slate-100 font-bold truncate max-w-[240px]">${s.subject}</span>
-                                </div>
-                                <div class="flex items-center gap-1.5 flex-shrink-0 justify-end">
-                                    <span class="inline-flex items-center gap-1 text-[8px] font-black uppercase px-1.5 py-0.5 rounded ${badgeColor}">
-                                        <i class="fa-solid ${folderIcon} text-[7px]"></i> ${s.landing}
-                                    </span>
-                                    <span class="text-[9px] font-black text-blue-400 flex-shrink-0 italic">${s.date} @ ${s.time}</span>
-                                </div>
-                            </div>
-                            <div class="mt-1.5 pt-1.5 border-t border-slate-800/60 flex items-center gap-2 text-[9px] text-slate-400">
-                                <span class="font-bold text-slate-500 uppercase tracking-wider text-[8px]">Delivery Speed:</span>
-                                <span class="px-1.5 py-0.5 bg-slate-950 text-yellow-400 border border-slate-800 rounded font-mono font-bold flex items-center gap-1">
-                                    <i class="fa-solid fa-stopwatch text-[8px]"></i> ${s.deliveryStatus}
-                                </span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+        async function runScanSequence(mode) {
+            const domains = dom.input.value.split('\n').map(d => d.trim()).filter(d => d.length > 0);
+            if (domains.length === 0) {
+                showToast("Missing Target Domain", "Please enter at least one target domain to check.");
+                return;
             }
 
-            row.innerHTML = `
-                <td class="px-5 py-4">${accountLabel}</td>
-                <td class="px-5 py-4"><span class="text-white font-mono text-[10px] font-black bg-slate-900 px-2 py-0.5 rounded border border-slate-800">${domain}</span></td>
-                <td class="px-5 py-4">${subjectsHtml}</td>
-                <td class="px-5 py-4">
-                    ${hasData && subjects[0] ? `
-                        <span class="px-2 py-1 bg-slate-950 text-yellow-400 border border-slate-800 rounded font-mono font-bold flex items-center gap-1 w-max text-[10px]">
-                            <i class="fa-solid fa-stopwatch"></i> ${subjects[0].deliveryStatus}
-                        </span>
-                    ` : `<span class="text-slate-600">—</span>`}
-                </td>
-                <td class="px-5 py-4 text-right">${statusHtml}</td>
-            `;
-            dom.body.appendChild(row);
-        }
-
-        document.getElementById('close-celebration-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            dom.oggyCelebrate.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
-            dom.oggyCelebrate.classList.remove('translate-x-0', 'opacity-100');
-        });
-
-        async function triggerNetworkSync(filterType) {
-            const domains = dom.input.value.split('\n').filter(d => d.trim() !== '');
-            if (domains.length === 0) return;
-
-            currentScope = filterType;
-            
-            dom.syncInbox.disabled = true;
-            dom.syncSpam.disabled = true;
-            
-            if(filterType === 'INBOX') {
-                dom.syncInbox.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span class="tracking-widest">EXTRACTING INBOX...</span>`;
-            } else {
-                dom.syncSpam.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span class="tracking-widest">ROUTING SPAM...</span>`;
-            }
+            activeScanMode = mode;
+            setScanUIState(true, mode);
 
             dom.empty.classList.add('hidden');
             dom.table.classList.remove('hidden');
-            dom.clear.classList.remove('hidden');
             dom.commonSec.classList.remove('hidden');
             dom.previewTrigger.classList.add('hidden');
+            dom.inboxSummaryContainer.classList.add('hidden');
             dom.body.innerHTML = '';
-            lastResults = [];
+            lastScanResults = [];
 
-            dom.filterBadge.textContent = filterType === 'INBOX' ? "Scope: Inbox Logs Only" : "Scope: Spam Logs Only";
-            dom.filterBadge.className = `ml-2 text-[8px] px-2 py-0.5 rounded font-black border ${
-                filterType === 'INBOX' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-            }`;
-            dom.filterBadge.classList.remove('hidden');
-
-            dom.oggyCelebrate.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
-            dom.oggyCelebrate.classList.remove('translate-x-0', 'opacity-100');
+            const totalScans = domains.length * CONFIG.accounts.length;
+            let completedScans = 0;
 
             for (const domain of domains) {
-                const trimmed = domain.trim();
-                
                 await Promise.all(CONFIG.accounts.map(async (acc) => {
                     try {
                         const token = await getAccess(acc.token);
-                        const subjects = await fetchSubjects(token, trimmed, filterType);
-                        renderRow(acc.name, trimmed, subjects);
+                        const subjects = await fetchSubjects(token, domain, mode);
+                        
+                        renderRow(acc, domain, subjects, mode);
                         if (subjects && subjects.length > 0) {
-                            lastResults.push({ accName: acc.name, subjects });
+                            lastScanResults.push({ accName: acc.name, subjects });
                         }
                     } catch (e) {
-                        renderRow(acc.name, trimmed, null);
+                        renderRow(acc, domain, null, mode);
+                    } finally {
+                        completedScans++;
+                        dom.feedStatus.textContent = `Scanned ${completedScans} of ${totalScans} node sequences...`;
                     }
                 }));
             }
 
-            calculateCommonality(lastResults);
+            calculateCommonality(lastScanResults, mode);
+            setScanUIState(false, mode);
+            dom.feedStatus.textContent = `Completed scan in [${mode.toUpperCase()}] mode at ${new Date().toLocaleTimeString()}`;
+        }
+
+        function setScanUIState(isScanning, mode) {
+            dom.btnCheckInbox.disabled = isScanning;
+            dom.btnCheckSpam.disabled = isScanning;
             
-            dom.syncInbox.disabled = false;
-            dom.syncSpam.disabled = false;
-            dom.syncInbox.innerHTML = `<i class="fa-solid fa-envelope-open"></i><span class="tracking-wider uppercase">SYNC INBOX NET</span>`;
-            dom.syncSpam.innerHTML = `<i class="fa-solid fa-bug"></i><span class="tracking-wider uppercase">SYNC SPAM NET</span>`;
+            if (isScanning) {
+                dom.progress.classList.remove('hidden');
+                dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold flex items-center gap-2 animate-pulse";
+                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-600"></span> Scanning [${mode.toUpperCase()}]...`;
+            } else {
+                dom.progress.classList.add('hidden');
+                const badgeColor = mode === 'inbox' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-800';
+                dom.modeBadge.className = `self-start sm:self-auto px-3.5 py-1.5 rounded-full ${badgeColor} border border-slate-200 text-xs font-bold flex items-center gap-2`;
+                dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full ${mode === 'inbox' ? 'bg-indigo-600' : 'bg-amber-600'}"></span> Active Mode: ${mode.toUpperCase()}`;
+            }
         }
 
-        dom.syncInbox.addEventListener('click', () => triggerNetworkSync('INBOX'));
-        dom.syncSpam.addEventListener('click', () => triggerNetworkSync('SPAM'));
+        dom.btnCheckInbox.addEventListener('click', () => runScanSequence('inbox'));
+        dom.btnCheckSpam.addEventListener('click', () => runScanSequence('spam'));
 
-        function showToast() {
-            dom.toast.classList.remove('translate-y-12', 'opacity-0');
-            dom.toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {
-                dom.toast.classList.remove('translate-y-0', 'opacity-100');
-                dom.toast.classList.add('translate-y-12', 'opacity-0');
-            }, 5000);
-        }
+        dom.btnClear.addEventListener('click', () => {
+            dom.input.value = '';
+            dom.body.innerHTML = '';
+            dom.table.classList.add('hidden');
+            dom.empty.classList.remove('hidden');
+            dom.commonSec.classList.add('hidden');
+            dom.previewTrigger.classList.add('hidden');
+            dom.inboxSummaryContainer.classList.add('hidden');
+            dom.feedStatus.textContent = "Awaiting scan initiation";
+            dom.modeBadge.className = "self-start sm:self-auto px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-2";
+            dom.modeBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500"></span> Idle / Ready`;
+            lastScanResults = [];
+        });
+
+        dom.copy.addEventListener('click', () => {
+            const val = dom.commonInput.value;
+            if (val && !val.includes('No common') && !val.includes('Scanning')) {
+                navigator.clipboard.writeText(val).then(() => {
+                    const origIcon = dom.copy.innerHTML;
+                    dom.copy.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i>`;
+                    setTimeout(() => { dom.copy.innerHTML = origIcon; }, 1800);
+                }).catch(() => {
+                    const el = document.createElement("textarea");
+                    el.value = val;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(el);
+                });
+            }
+        });
 
         dom.showPreviewBtn.addEventListener('click', () => {
-            if (lastResults.length === 0) return;
-
-            const targetSubject = dom.commonInput.value;
-            const muskanAccountName = "musk9090";
-            const muskanResult = lastResults.find(item => item.accName === muskanAccountName);
-
-            if (!muskanResult) {
-                showToast();
+            const muskanResult = lastScanResults.find(item => item.accName === 'muskansharma90' || item.accName === 'musk9090');
+            if (!muskanResult || !muskanResult.subjects || muskanResult.subjects.length === 0) {
+                showToast("Preview Unavailable", "No subject data retrieved for node.");
                 return;
             }
 
-            let matchedEmail = muskanResult.subjects.find(s => s.subject === targetSubject);
-            if (!matchedEmail && muskanResult.subjects.length > 0) {
-                matchedEmail = muskanResult.subjects[0];
-            }
+            const activeSubject = dom.commonInput.value;
+            let targetMail = muskanResult.subjects.find(s => s.subject === activeSubject);
+            if (!targetMail) targetMail = muskanResult.subjects[0];
 
-            if (matchedEmail) {
-                dom.modalSubject.textContent = matchedEmail.subject;
-                dom.modalAccount.textContent = "musk9090 (Muskan Sharma)";
-                dom.modalTime.textContent = `${matchedEmail.date} @ ${matchedEmail.time}`;
+            if (targetMail) {
+                dom.modalSubject.textContent = targetMail.subject;
+                dom.modalAccount.textContent = `${muskanResult.accName} (Muskan Sharma)`;
+                dom.modalTime.textContent = `${targetMail.dateStr} @ ${targetMail.timeStr}`;
+                dom.modalSecondsAgo.textContent = `${targetMail.secondsAgo.toLocaleString()} seconds ago`;
 
-                if (matchedEmail.body && matchedEmail.body.includes('<')) {
+                if (targetMail.body && targetMail.body.includes('<')) {
                     dom.modalBodyFallback.classList.add('hidden');
                     dom.modalBodyFrame.classList.remove('hidden');
 
-                    const disableLinkInteractionsCSS = `
+                    const safeCSS = `
                         <style>
-                            a, a *, [href], [onclick], button, input[type="submit"] {
+                            a, a *, [href], button, input {
                                 pointer-events: none !important;
                                 cursor: default !important;
                                 text-decoration: none !important;
                             }
                         </style>
                     `;
-                    dom.modalBodyFrame.srcdoc = disableLinkInteractionsCSS + matchedEmail.body;
+                    dom.modalBodyFrame.srcdoc = safeCSS + targetMail.body;
                 } else {
                     dom.modalBodyFrame.classList.add('hidden');
                     dom.modalBodyFallback.classList.remove('hidden');
-                    dom.modalBodyFallback.textContent = matchedEmail.body || matchedEmail.snippet || "No HTML structure recovered.";
+                    dom.modalBodyFallback.textContent = targetMail.body || targetMail.snippet || "No body content parsed.";
                 }
 
                 dom.previewModal.classList.remove('hidden');
                 setTimeout(() => {
                     dom.previewModal.classList.remove('opacity-0');
-                    dom.previewModal.querySelector('div').classList.remove('scale-95');
-                }, 50);
-            } else {
-                showToast();
+                }, 20);
             }
         });
 
         const hidePreviewModal = () => {
             dom.previewModal.classList.add('opacity-0');
-            dom.previewModal.querySelector('div').classList.add('scale-95');
             setTimeout(() => {
                 dom.previewModal.classList.add('hidden');
                 dom.modalBodyFrame.srcdoc = "";
-            }, 300);
+            }, 200);
         };
 
         dom.closeModalBtn.addEventListener('click', hidePreviewModal);
@@ -829,40 +846,14 @@
             if (e.target === dom.previewModal) hidePreviewModal();
         });
 
-        dom.copy.addEventListener('click', () => {
-            const val = dom.commonInput.value;
-            if (val && !val.includes('No unified') && !val.includes('Analyzing') && !val.includes('Chasing')) {
-                const el = document.createElement("textarea");
-                el.value = val;
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand("copy");
-                document.body.removeChild(el);
-                
-                const originalIcon = dom.copy.innerHTML;
-                dom.copy.innerHTML = `<i class="fa-solid fa-check"></i>`;
-                dom.copy.className = dom.copy.className.replace('bg-yellow-400', 'bg-emerald-500').replace('text-slate-950', 'text-white');
-                setTimeout(() => {
-                    dom.copy.innerHTML = originalIcon;
-                    dom.copy.className = dom.copy.className.replace('bg-emerald-500', 'bg-yellow-400').replace('text-white', 'text-slate-950');
-                }, 2000);
-            }
-        });
-
-        dom.clear.addEventListener('click', () => {
-            dom.body.innerHTML = '';
-            dom.table.classList.add('hidden');
-            dom.empty.classList.remove('hidden');
-            dom.clear.classList.add('hidden');
-            dom.commonSec.classList.add('hidden');
-            dom.previewTrigger.classList.add('hidden');
-            dom.filterBadge.classList.add('hidden');
-            dom.input.value = '';
-            lastResults = [];
-            
-            dom.oggyCelebrate.classList.add('translate-x-96', 'opacity-0', 'pointer-events-none');
-            dom.oggyCelebrate.classList.remove('translate-x-0', 'opacity-100');
-        });
+        function showToast(title, message) {
+            dom.toastTitle.textContent = title;
+            dom.toastMessage.textContent = message;
+            dom.toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                dom.toast.classList.add('translate-y-10', 'opacity-0');
+            }, 4000);
+        }
     </script>
 </body>
 </html>
