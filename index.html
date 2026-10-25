@@ -205,7 +205,7 @@
                                 <i class="fa-solid fa-eye text-sm"></i>
                             </div>
                             <div>
-                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Muskan Sharma Account</h4>
+                                <h4 id="preview-trigger-title" class="text-sm font-bold text-slate-800">Email Found in Target Account</h4>
                                 <p id="preview-trigger-desc" class="text-xs text-slate-500">View safe sandboxed preview pulled from node <strong class="text-slate-700 font-semibold">musk9090</strong>.</p>
                             </div>
                         </div>
@@ -269,7 +269,7 @@
             <!-- Modal Header -->
             <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit: Muskan Sharma</span>
+                    <span class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Node Audit</span>
                     <h3 id="modal-subject" class="text-sm sm:text-base font-bold text-slate-900 mt-1 line-clamp-1">Email Subject Line</h3>
                 </div>
                 <button id="close-modal-btn" type="button" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-all text-sm shrink-0">
@@ -280,7 +280,7 @@
             <div class="px-4 sm:px-6 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2.5 sm:gap-4 items-center text-[11px] sm:text-xs text-slate-600 font-medium">
                 <div>
                     <span class="text-slate-400">Account:</span>
-                    <span id="modal-account" class="font-bold text-slate-800">musk9090 (Muskan Sharma)</span>
+                    <span id="modal-account" class="font-bold text-slate-800">musk9090</span>
                 </div>
                 <div class="w-1 h-1 rounded-full bg-slate-300 hidden sm:block"></div>
                 <div>
@@ -314,9 +314,12 @@
 
     <script>
         const CONFIG = {
-            clientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
-            clientSecret: "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",
-            accounts: [
+            // Default credentials used across accounts
+            defaultClientId: "128820302240-k7bk8mui4lr16gvonbqb7qn76o9rgd1q.apps.googleusercontent.com",
+            defaultClientSecret: "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",
+            
+            // Accounts array: specify custom clientId/clientSecret per account if needed
+             accounts: [
           { name: "nnon", token: "1//0gc7dGi8DfNkfCgYIARAAGBASNwF-L9Irk_tu6AVMH7x_8Zdpy7W9zmn58vFh75YnuE0_AMVtwPnpzw8Ta1CuoyeFYXM9PKI_YTo" },
                 { name: "riyasri", token: "1//0g0Ww00IQxHuACgYIARAAGBASNwF-L9IrDXxSpHvKjPEzj2CzoP3XRWiTn3oFy8GBjBsmsEskJP2hSm4DrFFZUU5kOxefg-f4qIo" },
               
@@ -329,6 +332,7 @@
                     clientSecret: "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"
                 }
             ]
+ 
         };
 
         const dom = {
@@ -377,14 +381,17 @@
         document.getElementById('sidebar-accounts-count').textContent = `${CONFIG.accounts.length} Nodes`;
         document.getElementById('header-accounts-count').textContent = CONFIG.accounts.length;
 
-        async function getAccess(refreshToken) {
+        async function getAccess(acc) {
+            const clientId = acc.clientId || CONFIG.defaultClientId;
+            const clientSecret = acc.clientSecret || CONFIG.defaultClientSecret;
+
             const res = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
-                    client_id: CONFIG.clientId,
-                    client_secret: CONFIG.clientSecret,
-                    refresh_token: refreshToken,
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    refresh_token: acc.token,
                     grant_type: 'refresh_token',
                 }),
             });
@@ -613,7 +620,6 @@
 
             const totalAccounts = CONFIG.accounts.length;
 
-            // Map unique subject lines per account (All landing folders)
             const accountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -645,7 +651,6 @@
                 dom.commonInput.value = `No common subjects detected in ${mode.toUpperCase()}.`;
             }
 
-            // Compute Inbox Specific Subject Lines and Match Percentages
             const inboxAccountMaps = results.reduce((acc, curr) => {
                 if (!acc[curr.accName]) acc[curr.accName] = new Set();
                 curr.subjects.forEach(s => {
@@ -726,7 +731,7 @@
             for (const domain of domains) {
                 await Promise.all(CONFIG.accounts.map(async (acc) => {
                     try {
-                        const token = await getAccess(acc.token);
+                        const token = await getAccess(acc);
                         const subjects = await fetchSubjects(token, domain, mode);
                         
                         renderRow(acc, domain, subjects, mode);
